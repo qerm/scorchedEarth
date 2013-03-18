@@ -1,5 +1,8 @@
+CVS
+bin
+server_bin
 *.class
-
+*_checkstyle.txt
 # Package Files #
 *.jar
 *.war

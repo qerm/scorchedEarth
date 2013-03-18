@@ -1,0 +1,203 @@
+<project name="lab9" basedir="." default="server_init">
+   <property name="antjar" 
+             value="/net/hu15/cs2335/java/ant-1.5.1/lib/ant.jar"/>
+   <property name="checkstylejar" 
+             value="/net/hu15/cs2335/java/checkstyle-2.4/checkstyle-all-2.4.jar"/>
+   <property name="junitjar"
+             value="/net/hu15/cs2335/java/junit3.8.1/junit.jar"/>
+
+   <property name="server_src" value="server_src"/>
+   <property name="server_bin" value="server_bin"/>
+   <property name="server_dist" value="server_dist"/>
+   <property name="server_doc" value="server_doc"/>
+   <property name="server_tmp" value="server_tmp"/>
+   <property name="server_test" value="server_test"/>
+
+
+
+   <property name="client_src" value="src"/>
+   <property name="client_bin" value="bin"/>
+   <property name="client_dist" value="dist"/>
+   <property name="client_doc" value="doc"/>
+   <property name="client_tmp" value="tmp"/>
+   <property name="client_test" value="client_test"/>
+
+
+
+
+
+
+   <taskdef name="checkstyle"
+            classname="com.puppycrawl.tools.checkstyle.CheckStyleTask"
+            classpath="${checkstylejar}"/>
+
+   <target name="server_init">
+      <mkdir dir="${server_bin}"/>
+      <mkdir dir="${server_dist}"/>
+      <mkdir dir="${server_doc}"/>
+      <mkdir dir="${server_tmp}"/>
+   </target>
+
+
+   <target name="client_init">
+      <mkdir dir="${client_bin}"/>
+      <mkdir dir="${client_dist}"/>
+      <mkdir dir="${client_doc}"/>
+      <mkdir dir="${client_tmp}"/>
+   </target>
+
+
+
+
+   <target name="clean">
+      <delete dir="${client_bin}"/>
+      <delete dir="${client_dist}"/>
+      <delete dir="${client_doc}"/>
+      <delete dir="${client_tmp}"/>
+ 
+      <delete dir="${server_bin}"/>
+      <delete dir="${server_dist}"/>
+      <delete dir="${server_doc}"/>
+      <delete dir="${server_tmp}"/>
+   </target>
+
+
+
+
+
+   <target name="server_compile" depends="server_init">
+      <javac srcdir="${server_src}" destdir="${server_bin}"/>
+   </target>
+
+   <target name="client_compile" depends="client_init">
+      <javac srcdir="${client_src}" destdir="${client_bin}"/>
+   </target>
+
+
+
+
+
+   <target name="server_compile_t" depends="server_compile">
+      <javac srcdir="${server_test}" destdir="${server_bin}">
+         <classpath>
+            <pathelement path="${junitjar}"/>
+            <pathelement path="${server_bin}"/>
+         </classpath>
+      </javac>
+   </target>
+
+     <target name="client_compile_t" depends="client_compile">
+      <javac srcdir="${client_test}" destdir="${client_bin}">
+         <classpath>
+            <pathelement path="${junitjar}"/>
+            <pathelement path="${client_bin}"/>
+         </classpath>
+      </javac>
+   </target>
+
+
+
+
+
+
+
+
+   <target name="server_checkstyle">
+      <checkstyle>
+         <fileset dir="${server_src}">
+            <include name="**/*.java"/>
+         </fileset>
+         <formatter type="plain" tofile="server_checkstyle.txt"/>
+      </checkstyle>
+   </target>
+
+
+   <target name="client_checkstyle">
+      <checkstyle>
+         <fileset dir="${client_src}">
+            <include name="**/*.java"/>
+         </fileset>
+         <formatter type="plain" tofile="client_checkstyle.txt"/>
+      </checkstyle>
+   </target>
+
+
+
+   <target name="server_javadoc" depends="server_init">
+      <javadoc destdir="${server_doc}">
+         <fileset dir="${server_src}">
+            <filename name="**/*.java"/>
+         </fileset>
+      </javadoc>
+   </target>
+
+
+   <target name="client_javadoc" depends="client_init">
+      <javadoc destdir="${client_doc}">
+         <fileset dir="${client_src}">
+            <filename name="**/*.java"/>
+         </fileset>
+      </javadoc>
+   </target>
+
+
+
+   <target name="server_junit" depends="server_compile_t">
+      <junit fork="yes" haltonfailure="no" dir="${server_bin}">
+         <classpath>
+            <pathelement path="${junitjar}"/>
+            <pathelement path="${server_bin}"/>
+         </classpath>
+         <batchtest fork="yes">
+            <fileset dir="${server_bin}">
+               <include name="**/*Test*"/>
+            </fileset>
+         </batchtest>
+         <formatter type="plain" />
+      </junit>
+   </target>
+
+
+   <target name="client_junit" depends="client_compile_t">
+      <junit fork="yes" haltonfailure="no" dir="${client_bin}">
+         <classpath>
+            <pathelement path="${junitjar}"/>
+            <pathelement path="${client_bin}"/>
+         </classpath>
+         <batchtest fork="yes">
+            <fileset dir="${client_bin}">
+               <include name="**/*Test*"/>
+            </fileset>
+         </batchtest>
+        <formatter type="plain" />
+      </junit>
+   </target>
+
+  <target name="server_dist" depends="server_compile">
+     <jar destfile="${server_dist}/Server.jar" basedir="${server_bin}"/>
+  </target>
+
+  <target name="client_dist" depends="client_compile">
+     <jar destfile="${client_dist}/Client.jar" basedir="${client_bin}"/>
+  </target>
+
+
+
+  <target name="server_run" depends="server_compile">
+     <java classname="ServerGUI" classpath="${server_bin}"  fork="true"/>
+  </target>
+
+
+  <target name="client_run" depends="client_compile">
+     <java classname="ScorchedEarth" classpath="${client_bin}" fork="true" dir="${client_bin}"/>
+  </target>
+
+
+
+ 
+</project>
+
+
+
+
+
